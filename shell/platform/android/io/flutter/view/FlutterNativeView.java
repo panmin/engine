@@ -43,17 +43,17 @@ public class FlutterNativeView implements BinaryMessenger {
     };
 
     public FlutterNativeView(@NonNull Context context) {
-        this(context, false);
+        this(context,"", false);
     }
 
-    public FlutterNativeView(@NonNull Context context, boolean isBackgroundView) {
+    public FlutterNativeView(@NonNull Context context,String packagePath, boolean isBackgroundView) {
         mContext = context;
         mPluginRegistry = new FlutterPluginRegistry(this, context);
         mFlutterJNI = new FlutterJNI();
         mFlutterJNI.addIsDisplayingFlutterUiListener(flutterUiDisplayListener);
         this.dartExecutor = new DartExecutor(mFlutterJNI, context.getAssets());
         mFlutterJNI.addEngineLifecycleListener(new EngineLifecycleListenerImpl());
-        attach(this, isBackgroundView);
+        attach(this, packagePath, isBackgroundView);
         assertAttached();
     }
 
@@ -147,8 +147,8 @@ public class FlutterNativeView implements BinaryMessenger {
         return mFlutterJNI;
     }
 
-    private void attach(FlutterNativeView view, boolean isBackgroundView) {
-        mFlutterJNI.attachToNative(isBackgroundView);
+    private void attach(FlutterNativeView view, String packagePath, boolean isBackgroundView) {
+        mFlutterJNI.attachToNative(packagePath, isBackgroundView);
         dartExecutor.onAttachedToJNI();
     }
 
