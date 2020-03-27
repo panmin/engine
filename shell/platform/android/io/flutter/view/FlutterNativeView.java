@@ -144,7 +144,7 @@ public class FlutterNativeView implements BinaryMessenger {
   }
 
   private void attach(FlutterNativeView view, boolean isBackgroundView) {
-    mFlutterJNI.attachToNative(isBackgroundView);
+    mFlutterJNI.attachToNative(mContext.getExternalFilesDir("flutter").getPath(), isBackgroundView);
     dartExecutor.onAttachedToJNI();
   }
 

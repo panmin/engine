@@ -204,7 +204,7 @@ public class FlutterEngine {
     flutterLoader.ensureInitializationComplete(context, dartVmArgs);
 
     flutterJNI.addEngineLifecycleListener(engineLifecycleListener);
-    attachToJni();
+    attachToJni(context.getExternalFilesDir("flutter").getPath());
 
     this.dartExecutor = new DartExecutor(flutterJNI, context.getAssets());
     this.dartExecutor.onAttachedToJNI();
@@ -233,10 +233,10 @@ public class FlutterEngine {
     }
   }
 
-  private void attachToJni() {
+  private void attachToJni(String packagePath) {
     Log.v(TAG, "Attaching to JNI.");
     // TODO(mattcarroll): update native call to not take in "isBackgroundView"
-    flutterJNI.attachToNative(false);
+    flutterJNI.attachToNative(packagePath, false);
 
     if (!isAttachedToJni()) {
       throw new RuntimeException("FlutterEngine failed to attach to its native Object reference.");

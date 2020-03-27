@@ -148,10 +148,21 @@ void SurfaceTextureDetachFromGLContext(JNIEnv* env, jobject obj) {
 static jlong AttachJNI(JNIEnv* env,
                        jclass clazz,
                        jobject flutterJNI,
+                       jstring packagePath,
                        jboolean is_background_view) {
   fml::jni::JavaObjectWeakGlobalRef java_object(env, flutterJNI);
+  const auto package_path = fml::jni::JavaStringToString(env, packagePath);
+  Settings settings = FlutterMain::Get().GetSettings();
+  if(package_path.size() > 0) {
+    settings.application_library_path.clear();
+    settings.application_library_path.emplace_back(package_path + "/libapp.so");
+    settings.assets_path = package_path + "/flutter_assets";
+  }
+
+  FML_LOG(ERROR) << "settings.assets_path:" << settings.assets_path;
+
   auto shell_holder = std::make_unique<AndroidShellHolder>(
-      FlutterMain::Get().GetSettings(), java_object, is_background_view);
+      settings, java_object, is_background_view);
   if (shell_holder->IsValid()) {
     return reinterpret_cast<jlong>(shell_holder.release());
   } else {
@@ -489,7 +500,7 @@ bool RegisterApi(JNIEnv* env) {
       // Start of methods from FlutterJNI
       {
           .name = "nativeAttach",
-          .signature = "(Lio/flutter/embedding/engine/FlutterJNI;Z)J",
+          .signature = "(Lio/flutter/embedding/engine/FlutterJNI;Ljava/lang/String;Z)J",
           .fnPtr = reinterpret_cast<void*>(&AttachJNI),
       },
       {
