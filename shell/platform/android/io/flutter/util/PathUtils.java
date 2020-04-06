@@ -6,6 +6,8 @@ package io.flutter.util;
 
 import android.content.Context;
 import android.os.Build;
+import java.io.File;
+import io.flutter.embedding.engine.loader.FlutterLoader;
 
 public final class PathUtils {
   public static String getFilesDir(Context applicationContext) {
@@ -22,5 +24,18 @@ public final class PathUtils {
     } else {
       return applicationContext.getCacheDir().getPath();
     }
+  }
+
+  // 获取动态化资源文件路径
+  public static String getDynamicPath(Context applicationContext){
+    String packagePath = getDataDirectory(applicationContext);
+    String aotLibFile = packagePath + File.separator + FlutterLoader.DEFAULT_AOT_SHARED_LIBRARY_NAME;
+    String flutterAssetsPath = packagePath + File.separator + FlutterLoader.DEFAULT_FLUTTER_ASSETS_DIR;
+    File aotFile = new File(aotLibFile);
+    File flutterAssetsFile = new File(flutterAssetsPath);
+    if (!aotFile.exists() && !flutterAssetsFile.exists()) {
+      packagePath = "";
+    }
+    return packagePath;
   }
 }

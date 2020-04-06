@@ -45,12 +45,12 @@ public class FlutterLoader {
       FlutterLoader.class.getName() + '.' + FLUTTER_ASSETS_DIR_KEY;
 
   // Resource names used for components of the precompiled snapshot.
-  private static final String DEFAULT_AOT_SHARED_LIBRARY_NAME = "libapp.so";
+  public static final String DEFAULT_AOT_SHARED_LIBRARY_NAME = "libapp.so";
   private static final String DEFAULT_VM_SNAPSHOT_DATA = "vm_snapshot_data";
   private static final String DEFAULT_ISOLATE_SNAPSHOT_DATA = "isolate_snapshot_data";
   private static final String DEFAULT_LIBRARY = "libflutter.so";
   private static final String DEFAULT_KERNEL_BLOB = "kernel_blob.bin";
-  private static final String DEFAULT_FLUTTER_ASSETS_DIR = "flutter_assets";
+  public static final String DEFAULT_FLUTTER_ASSETS_DIR = "flutter_assets";
 
   // Mutable because default values can be overridden via config properties
   private String aotSharedLibraryName = DEFAULT_AOT_SHARED_LIBRARY_NAME;
@@ -181,18 +181,21 @@ public class FlutterLoader {
         shellArgs.add("--" + VM_SNAPSHOT_DATA_KEY + "=" + vmSnapshotData);
         shellArgs.add("--" + ISOLATE_SNAPSHOT_DATA_KEY + "=" + isolateSnapshotData);
       } else {
-        shellArgs.add("--" + AOT_SHARED_LIBRARY_NAME + "=" + aotSharedLibraryName);
+        File appFile = new File(PathUtils.getDataDirectory(applicationContext) + File.separator + aotSharedLibraryName);
+        String aotSharedLibraryPath = applicationInfo.nativeLibraryDir + File.separator + aotSharedLibraryName;
+        if(appFile.exists()){
+          aotSharedLibraryPath = appFile.getPath();
+        }
+        //shellArgs.add("--" + AOT_SHARED_LIBRARY_NAME + "=" + aotSharedLibraryName);
 
         // Most devices can load the AOT shared library based on the library name
         // with no directory path.  Provide a fully qualified path to the library
         // as a workaround for devices where that fails.
         shellArgs.add(
-            "--"
-                + AOT_SHARED_LIBRARY_NAME
-                + "="
-                + applicationInfo.nativeLibraryDir
-                + File.separator
-                + aotSharedLibraryName);
+              "--"
+              + AOT_SHARED_LIBRARY_NAME
+              + "="
+              + aotSharedLibraryPath);
       }
 
       shellArgs.add("--cache-dir-path=" + PathUtils.getCacheDirectory(applicationContext));

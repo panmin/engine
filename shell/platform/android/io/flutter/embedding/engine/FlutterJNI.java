@@ -27,6 +27,7 @@ import io.flutter.view.FlutterCallbackInformation;
 import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import io.flutter.util.PathUtils;
 import java.io.File;
 
 /**
@@ -182,18 +183,14 @@ public class FlutterJNI {
    * <p>This method must not be invoked if {@code FlutterJNI} is already attached to native.
    */
   @UiThread
-  public void attachToNative(String packagePath, boolean isBackgroundView) {
+  public void attachToNative(String dynamicPath, boolean isBackgroundView) {
     ensureRunningOnMainThread();
     ensureNotAttachedToNative();
-    File appFile = new File(packagePath + "/libapp.so");
-    File assetsFile = new File(packagePath + "/flutter_assets");
-    if (!appFile.exists() && !assetsFile.exists()) {
-      packagePath = "";
-    }
-    nativePlatformViewId = nativeAttach(this, packagePath, isBackgroundView);
+
+    nativePlatformViewId = nativeAttach(this, dynamicPath, isBackgroundView);
   }
 
-  private native long nativeAttach(@NonNull FlutterJNI flutterJNI, String packagePath, boolean isBackgroundView);
+  private native long nativeAttach(@NonNull FlutterJNI flutterJNI, String dynamicPath, boolean isBackgroundView);
 
   /**
    * Detaches this {@code FlutterJNI} instance from Flutter's native engine, which precludes any

@@ -16,6 +16,8 @@ import io.flutter.embedding.engine.dart.DartExecutor;
 import io.flutter.embedding.engine.renderer.FlutterUiDisplayListener;
 import io.flutter.plugin.common.*;
 import java.nio.ByteBuffer;
+import io.flutter.util.PathUtils;
+import io.flutter.embedding.engine.loader.FlutterLoader;
 
 public class FlutterNativeView implements BinaryMessenger {
   private static final String TAG = "FlutterNativeView";
@@ -144,7 +146,9 @@ public class FlutterNativeView implements BinaryMessenger {
   }
 
   private void attach(FlutterNativeView view, boolean isBackgroundView) {
-    mFlutterJNI.attachToNative(mContext.getExternalFilesDir("flutter").getPath(), isBackgroundView);
+
+    mFlutterJNI.attachToNative(PathUtils.getDynamicPath(mContext), isBackgroundView);
+
     dartExecutor.onAttachedToJNI();
   }
 

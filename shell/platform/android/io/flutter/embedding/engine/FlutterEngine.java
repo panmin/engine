@@ -30,6 +30,7 @@ import io.flutter.plugin.platform.PlatformViewsController;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+import io.flutter.util.PathUtils;
 
 /**
  * A single Flutter execution environment.
@@ -204,7 +205,7 @@ public class FlutterEngine {
     flutterLoader.ensureInitializationComplete(context, dartVmArgs);
 
     flutterJNI.addEngineLifecycleListener(engineLifecycleListener);
-    attachToJni(context.getExternalFilesDir("flutter").getPath());
+    attachToJni(context);
 
     this.dartExecutor = new DartExecutor(flutterJNI, context.getAssets());
     this.dartExecutor.onAttachedToJNI();
@@ -233,10 +234,10 @@ public class FlutterEngine {
     }
   }
 
-  private void attachToJni(String packagePath) {
+  private void attachToJni(Context context) {
     Log.v(TAG, "Attaching to JNI.");
     // TODO(mattcarroll): update native call to not take in "isBackgroundView"
-    flutterJNI.attachToNative(packagePath, false);
+    flutterJNI.attachToNative(PathUtils.getDynamicPath(context), false);
 
     if (!isAttachedToJni()) {
       throw new RuntimeException("FlutterEngine failed to attach to its native Object reference.");

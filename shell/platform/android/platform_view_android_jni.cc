@@ -148,18 +148,18 @@ void SurfaceTextureDetachFromGLContext(JNIEnv* env, jobject obj) {
 static jlong AttachJNI(JNIEnv* env,
                        jclass clazz,
                        jobject flutterJNI,
-                       jstring packagePath,
+                       jstring dynamicPath,
                        jboolean is_background_view) {
   fml::jni::JavaObjectWeakGlobalRef java_object(env, flutterJNI);
-  const auto package_path = fml::jni::JavaStringToString(env, packagePath);
+  const auto dynamic_path = fml::jni::JavaStringToString(env, dynamicPath);
   Settings settings = FlutterMain::Get().GetSettings();
-  if(package_path.size() > 0) {
-    settings.application_library_path.clear();
-    settings.application_library_path.emplace_back(package_path + "/libapp.so");
-    settings.assets_path = package_path + "/flutter_assets";
+  if(dynamic_path.size() > 0) {
+      settings.application_library_path.clear();
+      settings.application_library_path.emplace_back(dynamic_path + "/libapp.so");
+      settings.assets_path = dynamic_path + "/flutter_assets";
   }
 
-  FML_LOG(ERROR) << "settings.assets_path:" << settings.assets_path;
+  FML_LOG(INFO) << "settings.assets_path:" << settings.assets_path;
 
   auto shell_holder = std::make_unique<AndroidShellHolder>(
       settings, java_object, is_background_view);
